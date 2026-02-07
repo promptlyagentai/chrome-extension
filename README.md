@@ -2,6 +2,12 @@
 
 A Chrome extension for saving web pages and articles directly to your PromptlyAgent knowledge system. Extract content, add annotations, tag pages, and build your personal knowledge base effortlessly.
 
+## Screenshots
+
+Clip any web content directly to PromptlyAgent knowledge
+![Web Clipper](screenshots/screenshot.png)
+
+
 ## Features
 
 - **Smart Content Extraction**: Uses Mozilla's Readability library to extract clean, readable content from web pages
