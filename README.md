@@ -40,7 +40,7 @@ Clip any web content directly to PromptlyAgent knowledge
 
 ### Method 2: Chrome Web Store (Future)
 
-_The extension will be available on the Chrome Web Store once published._
+_The extension will be available on the Chrome Web Store in the future._
 
 ## Configuration
 
