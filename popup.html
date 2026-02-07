@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PromptlyAgent Knowledge Clipper</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <!-- Configuration Screen (Unauthenticated) -->
+  <div id="config-screen" class="screen" style="display: none;">
+    <div class="header">
+      <div class="header-content">
+        <button id="back-btn" class="icon-btn" style="display: none;" title="Back">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M19 12H5M12 19l-7-7 7-7"/>
+          </svg>
+        </button>
+        <div>
+          <h1>PromptlyAgent Clipper</h1>
+          <p class="subtitle">Configure your connection</p>
+        </div>
+      </div>
+    </div>
+
+    <div id="config-error" class="error-message" style="display: none;"></div>
+
+    <form id="config-form" class="form">
+      <div class="form-group">
+        <label for="api-url">API URL</label>
+        <input
+          type="url"
+          id="api-url"
+          placeholder="https://your-promptlyagent.com"
+          required
+        />
+        <small class="hint">Your PromptlyAgent application URL</small>
+      </div>
+
+      <div class="form-group">
+        <label for="api-token">API Token</label>
+        <input
+          type="password"
+          id="api-token"
+          placeholder="Enter your API token"
+          required
+        />
+        <small class="hint">
+          Create a token with <strong>knowledge:create</strong> scope
+        </small>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary" id="save-config-btn">
+          <span class="btn-text">Save Configuration</span>
+          <span class="btn-loader" style="display: none;">Validating...</span>
+        </button>
+        <a href="#" id="get-token-link" class="link">Get API Token →</a>
+      </div>
+    </form>
+  </div>
+
+  <!-- Save Screen (Authenticated) -->
+  <div id="save-screen" class="screen" style="display: none;">
+    <div class="header">
+      <h1>Save to Knowledge</h1>
+      <button id="settings-btn" class="icon-btn" title="Settings">
+        <svg width="16" height="16" viewBox="0 0 30 30" fill="currentColor">
+          <path d="M128.52,381.134 L127.528,382.866 C127.254,383.345 126.648,383.508 126.173,383.232 L123.418,381.628 C122.02,383.219 120.129,384.359 117.983,384.799 L117.983,387 C117.983,387.553 117.54,388 116.992,388 L115.008,388 C114.46,388 114.017,387.553 114.017,387 L114.017,384.799 C111.871,384.359 109.98,383.219 108.582,381.628 L105.827,383.232 C105.352,383.508 104.746,383.345 104.472,382.866 L103.48,381.134 C103.206,380.656 103.369,380.044 103.843,379.769 L106.609,378.157 C106.28,377.163 106.083,376.106 106.083,375 C106.083,373.894 106.28,372.838 106.609,371.843 L103.843,370.232 C103.369,369.956 103.206,369.345 103.48,368.866 L104.472,367.134 C104.746,366.656 105.352,366.492 105.827,366.768 L108.582,368.372 C109.98,366.781 111.871,365.641 114.017,365.201 L114.017,363 C114.017,362.447 114.46,362 115.008,362 L116.992,362 C117.54,362 117.983,362.447 117.983,363 L117.983,365.201 C120.129,365.641 122.02,366.781 123.418,368.372 L126.173,366.768 C126.648,366.492 127.254,366.656 127.528,367.134 L128.52,368.866 C128.794,369.345 128.631,369.956 128.157,370.232 L125.391,371.843 C125.72,372.838 125.917,373.894 125.917,375 C125.917,376.106 125.72,377.163 125.391,378.157 L128.157,379.769 C128.631,380.044 128.794,380.656 128.52,381.134 L128.52,381.134 Z M130.008,378.536 L127.685,377.184 C127.815,376.474 127.901,375.749 127.901,375 C127.901,374.252 127.815,373.526 127.685,372.816 L130.008,371.464 C130.957,370.912 131.281,369.688 130.733,368.732 L128.75,365.268 C128.203,364.312 126.989,363.983 126.041,364.536 L123.694,365.901 C122.598,364.961 121.352,364.192 119.967,363.697 L119.967,362 C119.967,360.896 119.079,360 117.983,360 L114.017,360 C112.921,360 112.033,360.896 112.033,362 L112.033,363.697 C110.648,364.192 109.402,364.961 108.306,365.901 L105.959,364.536 C105.011,363.983 103.797,364.312 103.25,365.268 L101.267,368.732 C100.719,369.688 101.044,370.912 101.992,371.464 L104.315,372.816 C104.185,373.526 104.099,374.252 104.099,375 C104.099,375.749 104.185,376.474 104.315,377.184 L101.992,378.536 C101.044,379.088 100.719,380.312 101.267,381.268 L103.25,384.732 C103.797,385.688 105.011,386.017 105.959,385.464 L108.306,384.099 C109.402,385.039 110.648,385.809 112.033,386.303 L112.033,388 C112.033,389.104 112.921,390 114.017,390 L117.983,390 C119.079,390 119.967,389.104 119.967,388 L119.967,386.303 C121.352,385.809 122.598,385.039 123.694,384.099 L126.041,385.464 C126.989,386.017 128.203,385.688 128.75,384.732 L130.733,381.268 C131.281,380.312 130.957,379.088 130.008,378.536 L130.008,378.536 Z M116,378 C114.357,378 113.025,376.657 113.025,375 C113.025,373.344 114.357,372 116,372 C117.643,372 118.975,373.344 118.975,375 C118.975,376.657 117.643,378 116,378 L116,378 Z M116,370 C113.261,370 111.042,372.238 111.042,375 C111.042,377.762 113.261,380 116,380 C118.739,380 120.959,377.762 120.959,375 C120.959,372.238 118.739,370 116,370 L116,370 Z" transform="translate(-101, -360)"/>
+        </svg>
+      </button>
+    </div>
+
+    <div id="save-error" class="error-message" style="display: none;"></div>
+    <div id="save-success" class="success-message" style="display: none;"></div>
+
+    <form id="save-form" class="form">
+      <!-- Page Info -->
+      <div class="page-info">
+        <div class="info-badge" id="selection-badge" style="display: none;">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M9 11l3 3L22 4"></path>
+            <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"></path>
+          </svg>
+          Selected text
+        </div>
+        <div class="page-url" id="page-url"></div>
+      </div>
+
+      <!-- Title -->
+      <div class="form-group">
+        <label for="title">Title</label>
+        <input
+          type="text"
+          id="title"
+          placeholder="Page title"
+          required
+        />
+      </div>
+
+      <!-- Description -->
+      <div class="form-group">
+        <label for="description">Description</label>
+        <textarea
+          id="description"
+          placeholder="Page description (optional)"
+          rows="3"
+        ></textarea>
+      </div>
+
+      <!-- Custom Notes -->
+      <div class="form-group">
+        <label for="notes">Custom Notes</label>
+        <textarea
+          id="notes"
+          placeholder="Add your personal notes or annotations (optional)"
+          rows="3"
+        ></textarea>
+      </div>
+
+      <!-- Tags -->
+      <div class="form-group">
+        <label for="tags">Tags</label>
+        <input
+          type="text"
+          id="tags"
+          placeholder="Enter tags separated by commas"
+        />
+        <small class="hint">Example: article, research, technology</small>
+      </div>
+
+      <!-- Privacy & Screenshot Row -->
+      <div class="form-row">
+        <div class="form-group">
+          <label>Privacy</label>
+          <div class="radio-group">
+            <label class="radio-label">
+              <input type="radio" name="privacy" value="private" checked>
+              <span>Private</span>
+            </label>
+            <label class="radio-label">
+              <input type="radio" name="privacy" value="public">
+              <span>Public</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="checkbox-label">
+            <input type="checkbox" id="screenshot" checked>
+            <span>Capture screenshot</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Auto-Refresh Settings -->
+      <div class="form-section">
+        <label class="checkbox-label">
+          <input type="checkbox" id="auto-refresh-enabled">
+          <span>Enable Auto-Refresh</span>
+        </label>
+        <small class="hint">Automatically update this page's content periodically</small>
+      </div>
+
+      <div id="refresh-options" style="display: none;" class="form-group">
+        <label for="refresh-interval">Refresh Interval</label>
+        <select id="refresh-interval">
+          <option value="60">Every hour</option>
+          <option value="360">Every 6 hours</option>
+          <option value="720">Every 12 hours</option>
+          <option value="1440" selected>Every day</option>
+          <option value="10080">Every week</option>
+          <option value="43200">Every month</option>
+        </select>
+        <small class="hint">How often to check for updates</small>
+      </div>
+
+      <!-- TTL -->
+      <div class="form-group">
+        <label for="ttl">Time to Live (TTL)</label>
+        <select id="ttl">
+          <option value="">Keep forever</option>
+          <option value="24">1 day</option>
+          <option value="168">1 week</option>
+          <option value="720">1 month</option>
+          <option value="2160">3 months</option>
+          <option value="8760">1 year</option>
+        </select>
+      </div>
+
+      <!-- Content Preview (Collapsible) -->
+      <details class="content-preview">
+        <summary>Content Preview (<span id="content-length">0</span> characters)</summary>
+        <div id="content-text" class="preview-text"></div>
+      </details>
+
+      <!-- Actions -->
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary btn-large" id="save-btn">
+          <span class="btn-text">Save to Knowledge</span>
+          <span class="btn-loader" style="display: none;">Saving...</span>
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Loading Screen -->
+  <div id="loading-screen" class="screen">
+    <div class="loader">Loading...</div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="storage.js"></script>
+  <script src="api-client.js"></script>
+  <script src="popup.js"></script>
+</body>
+</html>
